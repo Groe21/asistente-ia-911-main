@@ -18,10 +18,17 @@ const allowedOrigins = [
   'http://localhost:3000', 'http://localhost:3001',
   'http://localhost:3002', 'http://localhost:5173',
   'https://asistente-ia-911-production.up.railway.app',
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
 ].filter(Boolean);
 
-app.use(cors({ origin: allowedOrigins }));
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  return /https:\/\/.*\.vercel\.(app|dev)$/i.test(origin);
+};
+
+app.use(cors({ origin: isAllowedOrigin }));
 app.use(express.json());
 
 // Rutas
@@ -62,8 +69,12 @@ if (fs.existsSync(indexHtmlPath)) {
   console.log('⚠️  dist/index.html no encontrado - solo API disponible');
 }
 
-// Iniciar servidor
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Backend corriendo en 0.0.0.0:${PORT}`);
-  console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
-});
+// Iniciar servidor solo en entornos locales; en Vercel el runtime lo maneja como función.
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Backend corriendo en 0.0.0.0:${PORT}`);
+    console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
+  });
+}
+
+module.exports = app;

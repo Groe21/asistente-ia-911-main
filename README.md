@@ -1,107 +1,98 @@
-# React
+# IA-911 Assist
 
-Un proyecto moderno basado en React que utiliza las tecnologías y herramientas frontend más recientes para construir aplicaciones web responsive.
+Aplicación web para gestión de emergencias médicas con asistente de IA, panel de pacientes, historial clínico y análisis de urgencia.
 
-## 🚀 Características
+## 🚀 Tecnologías
 
-- **React 18** - Versión de React con mejoras en el renderizado y características concurrentes
-- **Vite** - Herramienta de construcción y servidor de desarrollo ultrarrápido
-- **Redux Toolkit** - Gestión del estado con una configuración de Redux simplificada
-- **TailwindCSS** - Framework CSS utility-first con amplia personalización
-- **React Router v6** - Enrutamiento declarativo para aplicaciones React
-- **Visualización de datos** - Integración con D3.js y Recharts para visualización de datos potente
-- **Gestión de formularios** - React Hook Form para manejo eficiente de formularios
-- **Animaciones** - Framer Motion para animaciones de interfaz fluidas
-- **Testing** - Configuración con Jest y React Testing Library
+- Frontend: React + Vite + Tailwind CSS
+- Backend: Node.js + Express
+- Base de datos: Prisma (opcional, con modo demo si no hay DATABASE_URL)
+- IA: Groq via OpenAI-compatible API
 
-## 📋 Requisitos previos
+## 📋 Requisitos
 
-- Node.js (v14.x o superior)
-- npm o yarn
+- Node.js 18+
+- npm
 
-## 🛠️ Instalación
+## 🔧 Instalación local
 
-1. Instalar dependencias:
-	 ```bash
-	 npm install
-	 # o
-	 yarn install
-	 ```
-   
-2. Iniciar el servidor de desarrollo:
-	 ```bash
-	 npm start
-	 # o
-	 yarn start
-	 ```
+1. Clona el repositorio y entra a la carpeta:
 
-## 📁 Estructura del proyecto
-
-```
-react_app/
-├── public/             # Assets estáticos
-├── src/
-│   ├── components/     # Componentes UI reutilizables
-│   ├── pages/          # Componentes de página
-│   ├── styles/         # Estilos globales y configuración de Tailwind
-│   ├── App.jsx         # Componente principal de la aplicación
-│   ├── Routes.jsx      # Rutas de la aplicación
-│   └── index.jsx       # Punto de entrada de la aplicación
-├── .env                # Variables de entorno
-├── index.html          # Plantilla HTML
-├── package.json        # Dependencias y scripts del proyecto
-├── tailwind.config.js  # Configuración de Tailwind CSS
-└── vite.config.js      # Configuración de Vite
+```bash
+cd asistente-ia-911
+npm install
+cd backend && npm install && cd ..
 ```
 
-## 🧩 Añadir rutas
+2. Crea un archivo .env en la raíz del proyecto con:
 
-Para añadir nuevas rutas a la aplicación, actualiza el archivo `Routes.jsx`:
-
-```jsx
-import { useRoutes } from "react-router-dom";
-import HomePage from "pages/HomePage";
-import AboutPage from "pages/AboutPage";
-
-const ProjectRoutes = () => {
-	let element = useRoutes([
-		{ path: "/", element: <HomePage /> },
-		{ path: "/about", element: <AboutPage /> },
-		// Añade más rutas según sea necesario
-	]);
-
-	return element;
-};
+```env
+PORT=3001
+JWT_SECRET=tu_secreto
+GROQ_API_KEY=tu_api_key
+FRONTEND_URL=http://localhost:3000
+VITE_API_URL=http://localhost:3001/api
 ```
 
-## 🎨 Estilos
+3. Ejecuta el proyecto en modo desarrollo:
 
-Este proyecto utiliza Tailwind CSS para el estilado. La configuración incluye:
+```bash
+npm run dev
+```
 
-- Plugin de Forms para estilado de formularios
-- Plugin de Typography para estilado tipográfico
-- Plugin de Aspect Ratio para elementos responsivos
-- Container queries para diseño responsivo a nivel de componente
-- Tipografía fluida para textos responsivos
-- Utilidades de animación
+Esto levanta el frontend en Vite y el backend debe correr por separado con:
 
-## 📱 Diseño responsivo
+```bash
+cd backend
+npm run dev
+```
 
-La app está construida con diseño responsivo usando los breakpoints de Tailwind CSS.
-
-## 📦 Despliegue
-
-Genera la versión de producción de la aplicación:
+## 🧪 Build de producción
 
 ```bash
 npm run build
 ```
 
-## 🙏 Agradecimientos
+## ☁️ Despliegue en Vercel
 
-- Construido con ❤️ en Rocket.new
-- Impulsado por React y Vite
-- Estilado con Tailwind CSS
+Este proyecto está preparado para desplegarse en Vercel con:
+- frontend servido desde Vite
+- API bajo la ruta /api
 
-Built with ❤️ on Rocket.new
+### Variables de entorno en Vercel
+
+Agrega estas variables en el panel de Vercel:
+
+```env
+PORT=3001
+JWT_SECRET=tu_secreto
+GROQ_API_KEY=tu_api_key
+DATABASE_URL=tu_url_de_postgres_opcional
+FRONTEND_URL=https://tu-dominio.vercel.app
+VITE_API_URL=/api
+```
+
+### Pasos
+
+1. Conecta el repositorio en Vercel.
+2. Usa la carpeta raíz del proyecto como Root Directory.
+3. Añade las variables de entorno anteriores.
+4. Haz deploy.
+
+## 🧠 Funcionalidades principales
+
+- Login y registro de usuarios
+- Panel de control con pacientes y métricas
+- Historial de casos
+- Chat de asistencia con IA
+- Análisis de urgencia y recomendaciones
+
+## 📁 Estructura principal
+
+```text
+backend/        # API Express
+src/            # Frontend React
+public/         # Assets estáticos
+vercel.json     # Configuración para Vercel
+```
 
