@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  cedula    String   @unique
+  nombre    String
+  apellido  String
+  password  String
+  role      Role     @default(RESCATISTA)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patients     Patient[]
+  caseEntries  CaseEntry[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMINISTRADOR
+  MEDICO
+  RESCATISTA
+}
+
+model Patient {
+  id               String        @id @default(uuid())
+  code             String        @unique // EMG-001, EMG-002, etc.
+  name             String
+  age              Int
+  gender           String
+  bloodType        String?
+  contactNumber    String?
+  emergencyContact String?
+  allergies        String?
+  conditions       String?
+  symptoms         String
+  urgencyLevel     UrgencyLevel
+  status           PatientStatus @default(EN_EVALUACION)
+  arrivalTime      DateTime      @default(now())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  registeredBy   User?   @relation(fields: [registeredById], references: [id])
+  registeredById String?
+
+  aiAnalyses  AIAnalysis[]
+  caseEntries CaseEntry[]
+  vitalSigns  VitalSigns[]
+
+  @@map("patients")
+}
+
+enum UrgencyLevel {
+  CRITICO
+  ALTO
+  MODERADO
+  BAJO
+}
+
+enum PatientStatus {
+  EN_EVALUACION
+  EN_TRATAMIENTO
+  ESTABLE
+  DADO_DE_ALTA
+}
+
+model AIAnalysis {
+  id                  String   @id @default(uuid())
+  diagnosis           String
+  confidence          Float    // 0-100
+  recommendedAction   String
+  riskFactors         String[] // Array de factores de riesgo
+  reasoning           String?
+  modelVersion        String   @default("v1.0")
+  processedAt         DateTime @default(now())
+
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId String
+
+  symptoms  AnalyzedSymptom[]
+
+  @@map("ai_analyses")
+}
+
+model AnalyzedSymptom {
+  id          String @id @default(uuid())
+  name        String
+  severity    String // Crítico, Alto, Moderado, Bajo
+  confidence  Float
+  category    String // Cardiovascular, Neurológico, etc.
+  description String?
+
+  analysis   AIAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  analysisId String
+
+  @@map("analyzed_symptoms")
+}
+
+model VitalSigns {
+  id               String   @id @default(uuid())
+  heartRate        String?  // "110 bpm"
+  bloodPressure    String?  // "145/95 mmHg"
+  temperature      String?  // "37.2°C"
+  oxygenSaturation String?  // "94%"
+  recordedAt       DateTime @default(now())
+
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId String
+
+  @@map("vital_signs")
+}
+
+model CaseEntry {
+  id          String   @id @default(uuid())
+  type        String   // registro, analisis_ia, intervencion, cambio_estado, nota
+  title       String
+  description String
+  urgencyLevel String?
+  details     Json?    // Datos específicos en formato JSON
+  createdAt   DateTime @default(now())
+
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientId String
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  @@map("case_entries")
+}
